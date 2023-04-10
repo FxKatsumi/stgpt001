@@ -3,8 +3,11 @@ import streamlit as st
 
 from persons import personality, getPerson
 
-# Open AI Key
-openai.api_key = st.secrets.openai_settings.openai_key
+# セッションの初期化
+if 'texts' not in st.session_state:
+    st.session_state.texts = [] # 質問履歴
+if 'messages' not in st.session_state:
+    st.session_state.messages = [] # メッセージ履歴
 
 # チャットボット質問
 def completion(new_message_text:str, settings_text:str = '', past_messages:list = []):
@@ -20,74 +23,88 @@ def completion(new_message_text:str, settings_text:str = '', past_messages:list 
     Returns:
     tuple: A tuple containing the response message text and the updated list of past messages after appending the new and response messages.
     """
-    if len(past_messages) == 0 and len(settings_text) != 0:
-        system = {"role": "system", "content": settings_text}
-        past_messages.append(system)
-    new_message = {"role": "user", "content": new_message_text}
-    past_messages.append(new_message)
 
-    result = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=past_messages
-    )
-    response_message = {"role": "assistant", "content": result.choices[0].message.content}
-    past_messages.append(response_message)
-    response_message_text = result.choices[0].message.content
-    return response_message_text, past_messages
+    try:
+        if len(past_messages) == 0 and len(settings_text) != 0:
+            system = {"role": "system", "content": settings_text}
+            past_messages.append(system)
+        new_message = {"role": "user", "content": new_message_text}
+        past_messages.append(new_message)
 
-# セッションの初期化
-if 'texts' not in st.session_state:
-    st.session_state.texts = [] # 質問履歴
-if 'messages' not in st.session_state:
-    st.session_state.messages = [] # メッセージ履歴
+        # Open AI Key
+        openai.api_key = st.secrets.openai_settings.openai_key
 
-# サイドバー
+        result = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=past_messages
+        )
+        response_message = {"role": "assistant", "content": result.choices[0].message.content}
+        past_messages.append(response_message)
+        response_message_text = result.choices[0].message.content
 
-# 人格名リスト
-perlist = []
-for p in personality:
-    perlist.append(p[0])
+        return response_message_text, past_messages
 
-# 人格選択
-selperson = st.sidebar.selectbox(
-    '人格:',
-    perlist
-)
+    except Exception as e:
+        pass
 
-# 人格を選択
-if selperson:
-    st.session_state.messages = [] # メッセージ履歴クリア
+# メイン処理
+def appmain():
+    try:
+        # サイドバー
 
-# メイン画面
+        # 人格名リスト
+        perlist = []
+        for p in personality:
+            perlist.append(p[0])
 
-st.title('なりきりチャットボット')
-# st.title('〇〇チャットボット')
+        # 人格選択
+        selperson = st.sidebar.selectbox(
+            '人格:',
+            perlist
+        )
 
-# 入力フォーム
-with st.form("my_form", clear_on_submit=True): # 毎回テキストボックスをクリア
-    text = st.text_input('新しい質問：', '')
-    submit = st.form_submit_button("検索")
+        # 人格を選択
+        if selperson:
+            st.session_state.messages = [] # メッセージ履歴クリア
 
-# 検索ボタン
-if submit:
-    # 人格設定取得
-    setting = getPerson(selperson)
+        # メイン画面
 
-    # チャットに質問
-    ans, st.session_state.messages = completion(text, setting, st.session_state.messages)
+        st.title('なりきりチャットボット')
+        # st.title('〇〇チャットボット')
 
-    # 回答を保存
-    st.session_state.texts.append("回答：" + ans)
-    # 質問を保存
-    st.session_state.texts.append("質問：" + text)
+        # 入力フォーム
+        with st.form("my_form", clear_on_submit=True): # 毎回テキストボックスをクリア
+            text = st.text_input('新しい質問：', '')
+            submit = st.form_submit_button("検索")
 
-# 履歴を降順に表示
-c = 0
-for t in reversed(st.session_state.texts):
-    if c == 1: # 回答？
-        # st.subheader(t) # 文字を大きく
-        st.markdown(f'<span style="color:green;">{t}</span>', unsafe_allow_html=True) # 緑色
-    else:
-        st.write(t)
+        # 検索ボタン
+        if submit:
+            # 人格設定取得
+            setting = getPerson(selperson)
 
-    c = c + 1 # インクリメント
+            # チャットに質問
+            ans, st.session_state.messages = completion(text, setting, st.session_state.messages)
+
+            # 回答を保存
+            st.session_state.texts.append("回答：" + ans)
+            # 質問を保存
+            st.session_state.texts.append("質問：" + text)
+
+        # 履歴を降順に表示
+        c = 0
+        for t in reversed(st.session_state.texts):
+            if c == 1: # 回答？
+                # st.subheader(t) # 文字を大きく
+                st.markdown(f'<span style="color:green;">{t}</span>', unsafe_allow_html=True) # 緑色
+            else:
+                st.write(t)
+
+            c = c + 1 # インクリメント
+
+    except Exception as e:
+        st.error("エラー：" + str(e))
+
+#コマンドプロンプト上で表示する
+if __name__ == "__main__":
+    #メイン処理
+    appmain()
