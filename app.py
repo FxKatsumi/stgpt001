@@ -82,5 +82,12 @@ if submit:
     st.session_state.texts.append("質問：" + text)
 
 # 履歴を降順に表示
+c = 0
 for t in reversed(st.session_state.texts):
-    st.write(t)
+    if c == 1: # 回答？
+        # st.subheader(t) # 文字を大きく
+        st.markdown(f'<span style="color:green;">{t}</span>', unsafe_allow_html=True) # 緑色
+    else:
+        st.write(t)
+
+    c = c + 1 # インクリメント
