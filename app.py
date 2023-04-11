@@ -1,5 +1,6 @@
 import openai
 import streamlit as st
+from PIL import Image
 
 from persons import personality, getPerson
 
@@ -66,10 +67,17 @@ def appmain():
         # 人格を選択
         if selperson:
             st.session_state.messages = [] # メッセージ履歴クリア
+        
+        st.sidebar.write("") # 改行
+
+        # ロゴマーク表示
+        img = Image.open('images/forex_logo_a.png')
+        st.sidebar.image(img, width=150, use_column_width=False)
 
         # メイン画面
 
-        st.title('なりきりチャットボット')
+        st.title('なりきりくん')
+        # st.title('なりきりチャットボット')
         # st.title('〇〇チャットボット')
 
         # 入力フォーム
