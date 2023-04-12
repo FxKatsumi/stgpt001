@@ -76,9 +76,9 @@ def appmain():
 
         # メイン画面
 
-        st.title('なりきりくん')
-        # st.title('なりきりチャットボット')
         # st.title('〇〇チャットボット')
+        # st.title('なりきりチャットボット')
+        st.title('なりきりくん')
         st.caption('Powered by chatGPT')
 
         # 入力フォーム
