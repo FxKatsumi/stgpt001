@@ -79,10 +79,12 @@ def appmain():
         st.title('なりきりくん')
         # st.title('なりきりチャットボット')
         # st.title('〇〇チャットボット')
+        st.caption('Powered by chatGPT')
 
         # 入力フォーム
         with st.form("my_form", clear_on_submit=True): # 毎回テキストボックスをクリア
-            text = st.text_input('新しい質問：', '')
+            # text = st.text_input('新しい質問：', '')
+            text = st.text_area('新しい質問：', '')
             submit = st.form_submit_button("検索")
 
         # 検索ボタン
