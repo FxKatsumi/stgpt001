@@ -219,9 +219,16 @@ personality = [
 # 人格設定取得
 def getPerson(pname):
     person = ""
-    for p in personality:
-        if pname == p[0]:
-            person = p[1]
-            break
+
+    # for p in personality:
+    #     if pname == p[0]:
+    #         person = p[1]
+    #         break
+
+    # コレクション検索
+    ret = [x for x in personality if pname in x]
+
+    if ret != []: # 見つかった？
+        person = ret[0][1] # 人格
 
     return person
