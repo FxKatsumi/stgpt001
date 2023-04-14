@@ -85,7 +85,7 @@ def appmain():
         with st.form("my_form", clear_on_submit=True): # 毎回テキストボックスをクリア
             # text = st.text_input('新しい質問：', '')
             text = st.text_area('新しい質問：', '')
-            submit = st.form_submit_button("検索")
+            submit = st.form_submit_button("送信")
 
         # 検索ボタン
         if submit:
