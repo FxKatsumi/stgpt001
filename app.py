@@ -71,7 +71,8 @@ def appmain():
         st.sidebar.write("") # 改行
 
         # ロゴマーク表示
-        img = Image.open('images/forex_logo_a.png')
+        # img = Image.open('images/forex_logo_a.png')
+        img = Image.open('images/katsuo_98px.bmp')
         st.sidebar.image(img, width=150, use_column_width=False)
 
         # メイン画面
